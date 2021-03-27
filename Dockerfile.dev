@@ -1,0 +1,44 @@
+FROM elixir:1.11-slim
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo curl apt-utils inotify-tools git gcc g++ make locales \
+    && rm -rf /var/cache/apt \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+RUN useradd -ms /bin/bash dst
+WORKDIR /home/dst
+
+RUN mkdir ./portal_deployment ./portal_deployment/game_logic
+
+VOLUME ["/home/dst/portal_deployment/game_logic"]
+
+RUN chown -R dst:dst /home/dst/portal_deployment
+
+RUN set -x && \
+    dpkg --add-architecture i386 && \
+    apt-get update && apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget ca-certificates lib32gcc1 lib32stdc++6 libcurl4-gnutls-dev:i386 && \
+    wget -q -O - "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf - && \
+    chown -R dst:dst ./ && \
+    apt-get autoremove --purge -y wget && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+USER dst
+
+RUN ./steamcmd.sh \
+    +@ShutdownOnFailedCommand 1 \
+    +@NoPromptForPassword 1 \
+    +login anonymous \
+    +force_install_dir /home/dst/portal_deployment/game_logic \
+    +app_update 343050 validate \
+    +quit
+
+ENV DEPLOYER_PASSWORD=development
+
+RUN mix local.hex --force \
+    && mix local.rebar --force \

@@ -1,0 +1,12 @@
+{
+    "name": "dst_portal_deployment_dev",
+    "dockerComposeFile": [
+        "./docker-compose.dev.yml"
+    ],
+    "extensions": [
+        "elixir-lsp.elixir-ls"
+    ],
+    "service": "app",
+    "workspaceFolder": "/home/dst/portal_deployment/application",
+    "shutdownAction": "stopCompose"
+}
