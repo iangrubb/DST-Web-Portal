@@ -4,12 +4,8 @@ defmodule PortalDeploymentWeb.ClusterControllerTest do
   alias PortalDeployment.Clusters
   alias PortalDeployment.Clusters.Cluster
 
-  @create_attrs %{
-
-  }
-  @update_attrs %{
-
-  }
+  @create_attrs %{}
+  @update_attrs %{}
   @invalid_attrs %{}
 
   def fixture(:cluster) do
