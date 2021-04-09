@@ -20,11 +20,11 @@ defmodule PortalDeployment.Configuration.Cluster do
   def changeset(cluster, params) do
     cluster
     |> cast(params, [
-      :id,
       :cluster_name,
       :cluster_description,
       :cluster_password,
       :cluster_intention,
+      :game_mode,
       :max_players,
       :vote_enabled,
       :pvp,
@@ -33,6 +33,9 @@ defmodule PortalDeployment.Configuration.Cluster do
       :steam_group_admins,
       :cluster_token
     ])
+    |> validate_inclusion(:cluster_intention, ["coopreative", "competitive", "social", "madness"])
+    |> validate_inclusion(:game_mode, ["survival", "wilderness", "endless"])
+    |> validate_number(:max_players, greater_than_or_equal_to: 1, less_than_or_equal_to: 64)
     |> ensure_id()
   end
 
