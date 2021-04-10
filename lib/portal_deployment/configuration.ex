@@ -4,6 +4,7 @@ defmodule PortalDeployment.Configuration do
   """
 
   alias PortalDeployment.Configuration.Cluster
+  alias PortalDeployment.Configuration.Server
 
   @doc """
   Returns the list of clusters.
@@ -33,4 +34,6 @@ defmodule PortalDeployment.Configuration do
 
   def delete_cluster(id) do
   end
+
+
 end

@@ -8,7 +8,9 @@ defmodule PortalDeploymentWeb.Router do
   scope "/api", PortalDeploymentWeb do
     pipe_through :api
 
-    resources "/clusters", ClusterController, only: [:index, :show, :create, :delete]
+    resources "/clusters", ClusterController, only: [:index, :show, :create, :delete] do
+      resources "/servers", ServerController, only: [:index, :show, :update]
+    end
   end
 
   # Enables LiveDashboard only for development
