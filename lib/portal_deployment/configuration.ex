@@ -34,6 +34,4 @@ defmodule PortalDeployment.Configuration do
 
   def delete_cluster(id) do
   end
-
-
 end

@@ -3,7 +3,7 @@ defmodule PortalDeployment.Configuration.Cluster do
   import Ecto.Changeset
 
   embedded_schema do
-    field :cluster_name, :string, default: "My New Cluster"
+    field :cluster_name, :string, default: "MyNewCluster"
     field :cluster_description, :string, default: ""
     field :cluster_password, :string, default: ""
     field :cluster_intention, :string, default: "cooperative"
@@ -15,6 +15,7 @@ defmodule PortalDeployment.Configuration.Cluster do
     field :steam_group_only, :boolean, default: false
     field :steam_group_admins, :boolean, default: true
     field :cluster_token, :string, default: ""
+    field :cluster_key, :string, default: "some_random_value?"
   end
 
   def changeset(cluster, params) do

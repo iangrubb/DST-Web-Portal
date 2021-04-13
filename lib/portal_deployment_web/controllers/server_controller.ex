@@ -23,5 +23,4 @@ defmodule PortalDeploymentWeb.ServerController do
     #   render(conn, "show.json", server: server)
     # end
   end
-
 end

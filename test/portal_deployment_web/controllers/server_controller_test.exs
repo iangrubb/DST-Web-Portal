@@ -4,12 +4,8 @@ defmodule PortalDeploymentWeb.ServerControllerTest do
   alias PortalDeployment.Configuration
   alias PortalDeployment.Configuration.Server
 
-  @create_attrs %{
-
-  }
-  @update_attrs %{
-
-  }
+  @create_attrs %{}
+  @update_attrs %{}
   @invalid_attrs %{}
 
   def fixture(:server) do
