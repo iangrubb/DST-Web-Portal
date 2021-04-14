@@ -1,19 +1,16 @@
-defmodule PortalDeployment.Configuration.Server do
+defmodule PortalDeployment.Configuration.Shard do
   use Ecto.Schema
   import Ecto.Changeset
 
   embedded_schema do
-    field :is_master, :boolean, default: false
-    field :name, :string, default: "MyNewShard"
-    field :cluster_id, :string
-
-    # world gen config info
+    field :name, :string, default: "My_New_Shard"
+    field :location, :string, default: "forest"
   end
 
   def changeset(server, params) do
     server
-    |> cast(params, [:is_master, :name, :cluster_id])
-    |> validate_required(:cluster_id)
+    |> cast(params, [:name, :location])
+    |> validate_inclusion(:location, ["forest", "cave"])
     |> ensure_id()
   end
 

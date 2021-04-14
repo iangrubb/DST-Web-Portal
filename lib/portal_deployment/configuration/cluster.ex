@@ -3,7 +3,7 @@ defmodule PortalDeployment.Configuration.Cluster do
   import Ecto.Changeset
 
   embedded_schema do
-    field :cluster_name, :string, default: "MyNewCluster"
+    field :cluster_name, :string, default: "My_New_Cluster"
     field :cluster_description, :string, default: ""
     field :cluster_password, :string, default: ""
     field :cluster_intention, :string, default: "cooperative"
@@ -18,7 +18,19 @@ defmodule PortalDeployment.Configuration.Cluster do
     field :cluster_key, :string, default: "some_random_value?"
   end
 
-  def changeset(cluster, params) do
+  def new(params \\ %{}) do
+    %__MODULE__{}
+    |> changeset(params)
+    |> apply_action(:create)
+  end
+
+  def update(%__MODULE__{} = cluster, params) do
+    cluster
+    |> changeset(params)
+    |> apply_action(:update)
+  end
+
+  def changeset(%__MODULE__{} = cluster, params) do
     cluster
     |> cast(params, [
       :cluster_name,

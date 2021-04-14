@@ -28,32 +28,17 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     end
   end
 
-  def create(%Changeset{data: %Cluster{}} = changeset), do: mutate(changeset, :insert)
-
-  def update(%Changeset{data: %Cluster{}} = changeset), do: mutate(changeset, :update)
-
-  defp mutate(%Changeset{data: %Cluster{}} = changeset, action) do
-    case Changeset.apply_action(changeset, action) do
-      {:ok, cluster} ->
-        save(cluster)
-        {:ok, cluster}
-
-      {:error, changeset} ->
-        {:error, changeset}
-    end
-  end
-
-  defp save(%Cluster{id: id, cluster_token: cluster_token} = cluster) do
+  def save(%Cluster{id: id, cluster_token: cluster_token} = cluster) do
     ensure_directory(cluster)
-    id |> cluster_path() |> ClusterIni.upsert(cluster)
+    id |> cluster_path() |> ClusterIni.create_or_update(cluster)
     id |> cluster_path() |> ClusterToken.write(cluster_token)
   end
 
-  defp ensure_directory(%Cluster{id: id} = cluster) do
+  defp ensure_directory(%Cluster{id: id}) do
     id |> cluster_path() |> File.mkdir_p()
   end
 
-  def raw_cluster_data(id) do
+  defp raw_cluster_data(id) do
     with {:ok, cluster_token} <- ClusterToken.read(cluster_path(id)),
          {:ok, cluster_ini_data} <- ClusterIni.read(cluster_path(id)) do
       cluster_ini_data |> Map.put("cluster_token", cluster_token)

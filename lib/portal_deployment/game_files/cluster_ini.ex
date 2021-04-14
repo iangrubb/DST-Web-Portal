@@ -9,14 +9,14 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
     end
   end
 
-  def upsert(base_path, data) do
+  def create_or_update(base_path, data) do
     new_content =
       base_path
       |> cluster_ini_path()
       |> File.read()
       |> case do
         {:ok, contents} -> contents
-        {:error, reason} -> template()
+        {:error, _reason} -> template()
       end
       |> String.split("\n")
       |> Enum.map(fn line -> String.split(line, "=") end)
