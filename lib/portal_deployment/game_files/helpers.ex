@@ -1,0 +1,41 @@
+defmodule PortalDeployment.GameFiles.Helpers do
+
+  def directories(path) do
+    path
+    |> File.ls!()
+    |> Enum.flat_map(fn name -> 
+      [name]
+      |> Enum.map(fn name -> path  <> "/" <> name end)
+      |> Enum.filter(&File.dir?/1)
+      |> Enum.map(fn _ -> name end)
+    end)
+  end
+
+  def read_with_backup(path, backup) do
+    path
+    |> File.read()
+    |> case do
+      {:ok, contents} -> contents
+      {:error, _reason} -> backup
+    end
+  end
+
+  def update_ini_file_contents(contents, data) do
+    contents
+    |> String.split("\n")
+    |> Enum.map(fn line -> String.split(line, "=") end)
+    |> Enum.map(fn
+      [line] ->
+        line
+
+      [key_str | value] ->
+        key = key_str |> String.trim() |> String.to_atom()
+
+        case Map.get(data, key) do
+          nil -> Enum.join([key_str | value], "=")
+          update -> "#{key_str}= #{update}"
+        end
+    end)
+    |> Enum.join("\n")
+  end
+end

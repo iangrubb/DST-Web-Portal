@@ -7,27 +7,18 @@ defmodule PortalDeployment.Configuration do
   alias PortalDeployment.Configuration.ClusterStorage
 
   alias PortalDeployment.Configuration.ShardCollection
+  alias PortalDeployment.Configuration.ShardCollectionStorage
 
-  def create_cluster() do
-    # {:ok, cluster} =
-
-      # |> ClusterStorage.create()
-
-    # cluster
-
-    case Cluster.new() do
-      {:ok, cluster} ->
-        # ClusterStorage.save(cluster)
-
-        # [%{is_master: true, location: "forest"}, %{is_master: false, location}]
-
-        ShardCollection.new(%{"cluster_id" => cluster.id})
-
-      {:error, changeset} -> changeset
+  def create_cluster(params \\ %{}) do
+    with {:ok, cluster} <- Cluster.new(params),
+         {:ok, shard_collection} <- ShardCollection.new(Map.put(params, "cluster_id", cluster.id)) do
+      ClusterStorage.save(cluster)
+      ShardCollectionStorage.save(shard_collection)
+      cluster
+    else
+      {:error, changeset} -> {:error, changeset}
     end
   end
-
-
 
   @doc """
   Returns the list of clusters.

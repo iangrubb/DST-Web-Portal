@@ -1,4 +1,6 @@
 defmodule PortalDeployment.GameFiles.ClusterIni do
+  alias PortalDeployment.GameFiles.Helpers
+
   def read(base_path) do
     base_path
     |> cluster_ini_path()
@@ -12,26 +14,8 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
   def create_or_update(base_path, data) do
     new_content =
       base_path
-      |> cluster_ini_path()
-      |> File.read()
-      |> case do
-        {:ok, contents} -> contents
-        {:error, _reason} -> template()
-      end
-      |> String.split("\n")
-      |> Enum.map(fn line -> String.split(line, "=") end)
-      |> Enum.map(fn
-        [line] -> line
-
-        [key_str | value] ->
-          key = key_str |> String.trim() |> String.to_atom()
-
-          case Map.get(data, key) do
-            nil -> Enum.join([key_str | value], "=")
-            update -> "#{key_str}= #{update}"
-          end
-      end)
-      |> Enum.join("\n")
+      |> Helpers.read_with_backup(template())
+      |> Helpers.update_ini_file_contents(data)
 
     base_path
     |> cluster_ini_path()
@@ -43,7 +27,9 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
     |> String.split("\n")
     |> Enum.map(fn line -> String.split(line, "=") end)
     |> Enum.reduce(%{}, fn
-      [_line], acc -> acc
+      [_line], acc ->
+        acc
+
       [key | value], acc ->
         value = value |> Enum.join("=") |> String.trim()
         Map.put(acc, String.trim(key), value)

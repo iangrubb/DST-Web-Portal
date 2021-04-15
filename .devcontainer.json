@@ -4,7 +4,7 @@
         "./docker-compose.dev.yml"
     ],
     "extensions": [
-        "jakebecker.elixir-ls"
+        // "jakebecker.elixir-ls"
     ],
     "service": "app",
     "workspaceFolder": "/home/dst/portal_deployment/application",

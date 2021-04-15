@@ -29,12 +29,12 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   end
 
   def save(%Cluster{id: id, cluster_token: cluster_token} = cluster) do
-    ensure_directory(cluster)
+    ensure_cluster_directory(id)
     id |> cluster_path() |> ClusterIni.create_or_update(cluster)
     id |> cluster_path() |> ClusterToken.write(cluster_token)
   end
 
-  defp ensure_directory(%Cluster{id: id}) do
+  defp ensure_cluster_directory(id) do
     id |> cluster_path() |> File.mkdir_p()
   end
 

@@ -12,16 +12,15 @@ defmodule PortalDeployment.Configuration.ShardCollection do
   end
 
   def new(params) do
-    params =
-      %{
-        "master_shard" => %{ "name" => "Forest", "location" => "forest"},
-        "dependent_shards" => [%{"name" => "Caves", "location" => "cave"}]
-      }
-      |> Map.merge(params)
+    params = default_shards() |> Map.merge(params)
 
     %__MODULE__{}
     |> changeset(params)
     |> apply_action(:create)
+  end
+
+  def shards(%__MODULE__{master_shard: master_shard, dependent_shards: dependent_shards}) do
+    [ master_shard | dependent_shards ]
   end
 
   def changeset(shard_collection, params) do
@@ -30,5 +29,12 @@ defmodule PortalDeployment.Configuration.ShardCollection do
     |> cast_embed(:master_shard, required: true)
     |> cast_embed(:dependent_shards)
     |> validate_required(:cluster_id)
+  end
+
+  defp default_shards() do
+    %{
+      "master_shard" => %{"name" => "Forest", "location" => "forest"},
+      "dependent_shards" => [%{"name" => "Caves", "location" => "cave"}]
+    }
   end
 end
