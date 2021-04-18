@@ -7,7 +7,7 @@ defmodule PortalDeployment.GameFiles.Helpers do
       [name]
       |> Enum.map(fn name -> path  <> "/" <> name end)
       |> Enum.filter(&File.dir?/1)
-      |> Enum.map(fn _ -> name end)
+      |> Enum.map(fn full_path -> {name, full_path} end)
     end)
   end
 

@@ -6,18 +6,17 @@ defmodule PortalDeployment.Configuration do
   alias PortalDeployment.Configuration.Cluster
   alias PortalDeployment.Configuration.ClusterStorage
 
-  alias PortalDeployment.Configuration.ShardCollection
-  alias PortalDeployment.Configuration.ShardCollectionStorage
-
   def create_cluster(params \\ %{}) do
-    with {:ok, cluster} <- Cluster.new(params),
-         {:ok, shard_collection} <- ShardCollection.new(Map.put(params, "cluster_id", cluster.id)) do
+    with {:ok, cluster} <- Cluster.new(params)do
       ClusterStorage.save(cluster)
-      ShardCollectionStorage.save(shard_collection)
-      cluster
+      {:ok, cluster}
     else
       {:error, changeset} -> {:error, changeset}
     end
+  end
+  
+  def get_cluster(id) do
+    ClusterStorage.find(id)
   end
 
   @doc """

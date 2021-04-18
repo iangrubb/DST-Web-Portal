@@ -9,6 +9,8 @@ defmodule PortalDeployment.Application do
     children = [
       # Start the Ecto repository
       PortalDeployment.Repo,
+      # Start the Runtime supervisor
+      PortalDeployment.Runtime.RuntimeSupervisor,
       # Start the Telemetry supervisor
       PortalDeploymentWeb.Telemetry,
       # Start the PubSub system

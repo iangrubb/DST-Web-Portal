@@ -5,13 +5,19 @@ defmodule PortalDeployment.Configuration.Shard do
   embedded_schema do
     field :name, :string, default: "My_New_Shard"
     field :location, :string, default: "forest"
+    field :is_master, :boolean
   end
 
   def changeset(server, params) do
     server
-    |> cast(params, [:name, :location])
+    |> cast(params, [:name, :location, :is_master])
     |> validate_inclusion(:location, ["forest", "cave"])
     |> ensure_id()
+  end
+
+  def check_whether_master(%__MODULE__{id: id} = shard, master_shard_id) do
+    {:ok, shard} = shard |> changeset(%{is_master: id == master_shard_id}) |> apply_action(:update)
+    shard
   end
 
   defp ensure_id(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
