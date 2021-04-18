@@ -16,9 +16,12 @@ defmodule PortalDeployment.Configuration do
   end
   
   def get_cluster(id) do
+
+    # This still needs to be able to get the shards for that cluster
+
     ClusterStorage.find(id)
   end
-
+  
   @doc """
   Returns the list of clusters.
 

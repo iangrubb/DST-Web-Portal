@@ -6,7 +6,7 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
     |> cluster_ini_path()
     |> File.read()
     |> case do
-      {:ok, contents} -> {:ok, convert_to_hash(contents)}
+      {:ok, contents} -> {:ok, Helpers.convert_ini_file_to_hash(contents)}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -20,20 +20,6 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
     base_path
     |> cluster_ini_path()
     |> File.write!(new_content)
-  end
-
-  defp convert_to_hash(file) do
-    file
-    |> String.split("\n")
-    |> Enum.map(fn line -> String.split(line, "=") end)
-    |> Enum.reduce(%{}, fn
-      [_line], acc ->
-        acc
-
-      [key | value], acc ->
-        value = value |> Enum.join("=") |> String.trim()
-        Map.put(acc, String.trim(key), value)
-    end)
   end
 
   defp cluster_ini_path(base_path), do: base_path <> "/cluster.ini"

@@ -20,6 +20,20 @@ defmodule PortalDeployment.GameFiles.Helpers do
     end
   end
 
+  def convert_ini_file_to_hash(file) do
+    file
+    |> String.split("\n")
+    |> Enum.map(fn line -> String.split(line, "=") end)
+    |> Enum.reduce(%{}, fn
+      [_line], acc ->
+        acc
+
+      [key | value], acc ->
+        value = value |> Enum.join("=") |> String.trim()
+        Map.put(acc, String.trim(key), value)
+    end)
+  end
+
   def update_ini_file_contents(contents, data) do
     contents
     |> String.split("\n")

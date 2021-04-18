@@ -5,6 +5,7 @@ defmodule PortalDeployment.Configuration.Shard do
   embedded_schema do
     field :name, :string, default: "My_New_Shard"
     field :location, :string, default: "forest"
+    # Helper field--source of truth is location in cluster
     field :is_master, :boolean
   end
 

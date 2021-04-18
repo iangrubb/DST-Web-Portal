@@ -1,9 +1,6 @@
 defmodule PortalDeployment.GameFiles.ServerIni do
   alias PortalDeployment.GameFiles.Helpers
 
-  
-  # Read data function
-
   def create_or_update(path, data) do
     new_content =
       path
@@ -14,6 +11,16 @@ defmodule PortalDeployment.GameFiles.ServerIni do
     path
     |> server_ini_path()
     |> File.write!(new_content)
+  end
+
+  def read(base_path) do
+    base_path
+    |> server_ini_path()
+    |> File.read()
+    |> case do
+      {:ok, contents} -> {:ok, Helpers.convert_ini_file_to_hash(contents)}
+      {:error, reason} -> {:error, reason}
+    end 
   end
 
   defp server_ini_path(path), do: path <> "/server.ini"
