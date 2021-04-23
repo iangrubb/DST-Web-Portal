@@ -11,19 +11,25 @@ defmodule PortalDeployment.Configuration.Shard do
 
   def changeset(server, params) do
     server
-    |> cast(params, [:name, :location, :is_master])
+    |> cast(params, [:id, :name, :location, :is_master])
     |> validate_inclusion(:location, ["forest", "cave"])
     |> ensure_id()
   end
 
   def check_whether_master(%__MODULE__{id: id} = shard, master_shard_id) do
-    {:ok, shard} = shard |> changeset(%{is_master: id == master_shard_id}) |> apply_action(:update)
+    {:ok, shard} =
+      shard |> changeset(%{is_master: id == master_shard_id}) |> apply_action(:update)
+
     shard
+  end
+
+  defp ensure_id(%Ecto.Changeset{changes: %{id: id}, data: %__MODULE__{id: nil}} = changeset) do
+    changeset |> change(%{id: id})
   end
 
   defp ensure_id(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
     changeset |> change(%{id: Ecto.UUID.generate()})
   end
 
-  defp ensure_id(%Ecto.Changeset{data: %__MODULE__{}} = changeset), do: changeset
+  defp ensure_id(changeset), do: changeset
 end

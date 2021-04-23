@@ -4,12 +4,8 @@ defmodule PortalDeploymentWeb.SessionControllerTest do
   alias PortalDeployment.Runtime
   alias PortalDeployment.Runtime.Session
 
-  @create_attrs %{
-
-  }
-  @update_attrs %{
-
-  }
+  @create_attrs %{}
+  @update_attrs %{}
   @invalid_attrs %{}
 
   def fixture(:session) do

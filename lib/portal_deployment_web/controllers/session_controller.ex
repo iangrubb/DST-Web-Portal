@@ -20,8 +20,8 @@ defmodule PortalDeploymentWeb.SessionController do
   end
 
   def delete(conn, %{"id" => id}) do
-
   end
+
   #   session = Runtime.get_session!(id)
 
   #   with {:ok, %Session{}} <- Runtime.delete_session(session) do

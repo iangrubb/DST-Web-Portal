@@ -7,21 +7,16 @@ defmodule PortalDeployment.Configuration do
   alias PortalDeployment.Configuration.ClusterStorage
 
   def create_cluster(params \\ %{}) do
-    with {:ok, cluster} <- Cluster.new(params)do
+    with {:ok, cluster} <- Cluster.new(params) do
       ClusterStorage.save(cluster)
       {:ok, cluster}
     else
       {:error, changeset} -> {:error, changeset}
     end
   end
-  
-  def get_cluster(id) do
 
-    # This still needs to be able to get the shards for that cluster
+  def get_cluster(id), do: ClusterStorage.find(id)
 
-    ClusterStorage.find(id)
-  end
-  
   @doc """
   Returns the list of clusters.
 

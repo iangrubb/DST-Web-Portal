@@ -21,14 +21,22 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
 
   def find(id) do
     case raw_cluster_data(id) do
-      :error -> {:error, "cluster not found"}
+      :error ->
+        {:error, "cluster not found"}
+
       data ->
         shard_data = cluster_path(id) |> ShardStorage.raw_shards_data()
-        
+
         combined_data =
           data
-          |> Map.put("master_shard", Enum.find(shard_data, fn shard -> shard["is_master"] == "true" end))
-          |> Map.put("dependent_shards", Enum.filter(shard_data, fn shard -> shard["is_master"] != "true" end))
+          |> Map.put(
+            "master_shard",
+            Enum.find(shard_data, fn shard -> shard["is_master"] == "true" end)
+          )
+          |> Map.put(
+            "dependent_shards",
+            Enum.filter(shard_data, fn shard -> shard["is_master"] != "true" end)
+          )
 
         %Cluster{}
         |> Changeset.change(%{id: id})
@@ -42,11 +50,14 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     ensure_cluster_directory(id)
     cluster_path(id) |> ClusterIni.create_or_update(cluster)
     cluster_path(id) |> ClusterToken.write(cluster_token)
-    Cluster.shards(cluster) |> Enum.each(fn shard ->
+
+    Cluster.shards(cluster)
+    |> Enum.each(fn shard ->
       shard
       |> Shard.check_whether_master(cluster.master_shard.id)
       |> ShardStorage.save_to(cluster_path(id))
     end)
+
     delete_unused_shards(id, Cluster.shards(cluster))
   end
 

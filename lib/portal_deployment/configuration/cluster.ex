@@ -5,7 +5,6 @@ defmodule PortalDeployment.Configuration.Cluster do
   alias PortalDeployment.Configuration.Shard
 
   embedded_schema do
-
     embeds_one :master_shard, Shard
     embeds_many :dependent_shards, Shard
 
@@ -21,11 +20,11 @@ defmodule PortalDeployment.Configuration.Cluster do
     field :steam_group_only, :boolean, default: false
     field :steam_group_admins, :boolean, default: true
     field :cluster_token, :string, default: ""
-    field :cluster_key, :string, default: "some_random_value?"
+    field :cluster_key, :string
   end
 
   def shards(%__MODULE__{master_shard: master_shard, dependent_shards: dependent_shards}) do
-    [ master_shard | dependent_shards ]
+    [master_shard | dependent_shards]
   end
 
   def new(params \\ %{}) do
@@ -63,14 +62,16 @@ defmodule PortalDeployment.Configuration.Cluster do
     |> validate_inclusion(:cluster_intention, ["coopreative", "competitive", "social", "madness"])
     |> validate_inclusion(:game_mode, ["survival", "wilderness", "endless"])
     |> validate_number(:max_players, greater_than_or_equal_to: 1, less_than_or_equal_to: 64)
-    |> ensure_id()
+    |> ensure_random_value_for_key(:id)
+    |> ensure_random_value_for_key(:cluster_key)
   end
 
-  defp ensure_id(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
-    changeset |> change(%{id: Ecto.UUID.generate()})
+  defp ensure_random_value_for_key(changeset, key) do
+    case Map.get(changeset.data, key) do
+      nil -> changeset |> change(Map.put(%{}, key, Ecto.UUID.generate()))
+      _ -> changeset
+    end
   end
-
-  defp ensure_id(%Ecto.Changeset{data: %__MODULE__{}} = changeset), do: changeset
 
   defp default_shards() do
     %{

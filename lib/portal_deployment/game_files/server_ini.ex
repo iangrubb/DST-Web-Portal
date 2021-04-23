@@ -20,7 +20,7 @@ defmodule PortalDeployment.GameFiles.ServerIni do
     |> case do
       {:ok, contents} -> {:ok, Helpers.convert_ini_file_to_hash(contents)}
       {:error, reason} -> {:error, reason}
-    end 
+    end
   end
 
   defp server_ini_path(path), do: path <> "/server.ini"

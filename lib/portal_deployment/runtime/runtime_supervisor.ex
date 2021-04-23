@@ -8,9 +8,9 @@ defmodule PortalDeployment.Runtime.RuntimeSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
-      PortalDeployment.Runtime.SessionsSupervisor,
-      {Registry, keys: :unique, name: SessionsRegistry},
-      {Registry, keys: :unique, name: ServersRegistry}
+      PortalDeployment.Runtime.SessionsRegistry,
+      {Registry, keys: :unique, name: ServersRegistry},
+      PortalDeployment.Runtime.SessionsSupervisor
     ]
 
     Supervisor.init(children, strategy: :one_for_all)

@@ -57,8 +57,8 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
     shard_enabled = true
     bind_ip = 127.0.0.1
     master_ip = 127.0.0.1
-    master_port = 11000
-    cluster_key =
+    master_port = 
+    cluster_key = 
     """
   end
 end

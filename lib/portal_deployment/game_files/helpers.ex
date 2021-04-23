@@ -1,11 +1,10 @@
 defmodule PortalDeployment.GameFiles.Helpers do
-
   def directories(path) do
     path
     |> File.ls!()
-    |> Enum.flat_map(fn name -> 
+    |> Enum.flat_map(fn name ->
       [name]
-      |> Enum.map(fn name -> path  <> "/" <> name end)
+      |> Enum.map(fn name -> path <> "/" <> name end)
       |> Enum.filter(&File.dir?/1)
       |> Enum.map(fn full_path -> {name, full_path} end)
     end)

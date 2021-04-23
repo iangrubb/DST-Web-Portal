@@ -8,7 +8,14 @@ defmodule PortalDeployment.Runtime.SessionsSupervisor do
   end
 
   def start_child(registered_session_name) do
-    DynamicSupervisor.start_child(__MODULE__, {SessionSupervisor, registered_session_name: registered_session_name})
+    DynamicSupervisor.start_child(
+      __MODULE__,
+      {SessionSupervisor, registered_session_name: registered_session_name}
+    )
+  end
+
+  def terminate_child(registered_session_name) do
+    DynamicSupervisor.terminate_child(__MODULE__, registered_session_name) 
   end
 
   @impl true
