@@ -61,6 +61,12 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     delete_unused_shards(id, Cluster.shards(cluster))
   end
 
+  def delete(%Cluster{id: id} = cluster) do
+    # This can get refactored into a ClusterFolder module
+    cluster_path(id) |> File.rm_rf!()
+    id
+  end
+
   defp delete_unused_shards(id, shards) do
     cluster_path(id)
     |> Helpers.directories()

@@ -6,6 +6,12 @@ defmodule PortalDeployment.Configuration do
   alias PortalDeployment.Configuration.Cluster
   alias PortalDeployment.Configuration.ClusterStorage
 
+  def list_clusters do
+
+  end
+
+  def get_cluster(id), do: ClusterStorage.find(id)
+
   def create_cluster(params \\ %{}) do
     with {:ok, cluster} <- Cluster.new(params) do
       ClusterStorage.save(cluster)
@@ -15,34 +21,29 @@ defmodule PortalDeployment.Configuration do
     end
   end
 
-  def get_cluster(id), do: ClusterStorage.find(id)
+  # TODO
+    
+  # Implement cluster_update and cluster_delete (for now don't worry about how this works on live clusters)
 
-  @doc """
-  Returns the list of clusters.
+  # Check that running multiple clusters at once works, with different numbers of shards
 
-  ## Examples
+  # Refactor
 
-      iex> list_clusters()
-      [%Cluster{}, ...]
-
-  """
-  def list_clusters do
-    raise "TODO"
+  def update_cluster(id, params) do
+    with {:ok, cluster} <- get_cluster(id),
+      {:ok, cluster} <- Cluster.update(cluster, params) do
+        ClusterStorage.save(cluster)
+        cluster
+      else
+        error_tuple -> error_tuple
+      end
   end
-
-  def get_cluster!(id) do
-  end
-
-  # def create_cluster(cluster_params) do
-  #   # should be able to create a default cluster if just a name is given (maybe even can use a default name?)
-
-  #   # Maybe don't use a file name at all. Use a UUID and for display purposes just reach in and show the shard name.
-
-  #   # should be able to pass topology options to set up custom number of shards.
-
-  #   Cluster.new()
-  # end
 
   def delete_cluster(id) do
+    with {:ok, cluster} <- get_cluster(id) do
+      {:ok, ClusterStorage.delete(cluster)}
+    else
+      error_tuple -> error_tuple
+    end
   end
 end
