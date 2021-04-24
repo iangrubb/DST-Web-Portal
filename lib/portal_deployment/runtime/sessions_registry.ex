@@ -70,7 +70,10 @@ defmodule PortalDeployment.Runtime.SessionsRegistry do
     case {Map.get(registry, key, nil), Enum.count(proposed_server_ids) == incoming_shards} do
       {nil, true} ->
         Process.monitor(pid)
-        registry = Map.put(registry, key, {pid, session, proposed_server_ids, proposed_session_number})
+
+        registry =
+          Map.put(registry, key, {pid, session, proposed_server_ids, proposed_session_number})
+
         {:reply, :yes, registry}
 
       _ ->
@@ -134,7 +137,9 @@ defmodule PortalDeployment.Runtime.SessionsRegistry do
 
   defp server_slots_in_use(registry) do
     registry
-    |> Enum.map(fn {_cluster_id, {_pid, _session, server_slot_ids, session_number}} -> server_slot_ids end)
+    |> Enum.map(fn {_cluster_id, {_pid, _session, server_slot_ids, session_number}} ->
+      server_slot_ids
+    end)
     |> Enum.concat()
   end
 end

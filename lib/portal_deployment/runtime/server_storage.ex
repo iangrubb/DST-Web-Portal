@@ -1,7 +1,7 @@
 defmodule PortalDeployment.Runtime.ServerStorage do
   alias PortalDeployment.Runtime.Server
   alias PortalDeployment.GameFiles.ServerIni
-  
+
   # For server.ini
   @starting_server_port 10998
   @starting_master_server_port 27016
@@ -19,5 +19,6 @@ defmodule PortalDeployment.Runtime.ServerStorage do
   # I'd like to refactor the following in some way.
   # The game_files modules should probably own facts about file paths. Maybe file folder modules are needed?
 
-  def shard_path(cluster_id, shard_id), do: "../game_files/clusters/" <> cluster_id <> "/" <> shard_id
+  def shard_path(cluster_id, shard_id),
+    do: "../game_files/clusters/" <> cluster_id <> "/" <> shard_id
 end

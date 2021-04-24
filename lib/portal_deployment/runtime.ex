@@ -5,7 +5,7 @@ defmodule PortalDeployment.Runtime do
 
   alias PortalDeployment.Runtime.Server
   alias PortalDeployment.Runtime.ServerStorage
-  alias PortalDeployment.Runtime.SessionSupervisor
+  alias PortalDeployment.Runtime.SessionServersSupervisor
   alias PortalDeployment.Runtime.Session
   alias PortalDeployment.Runtime.SessionStorage
   alias PortalDeployment.Runtime.SessionsRegistry
@@ -17,6 +17,8 @@ defmodule PortalDeployment.Runtime do
 
   def get_session(cluster_id), do: SessionsRegistry.get_session(cluster_id)
 
+  # PortalDeployment.Runtime.start_session("1a33cfac-85c0-4946-90f9-9d3633da197e")
+
   def start_session(cluster_id) do
     case Configuration.get_cluster(cluster_id) do
       {:ok, cluster} -> create_session_for_cluster(cluster)
@@ -24,10 +26,15 @@ defmodule PortalDeployment.Runtime do
     end
   end
 
+  # PortalDeployment.Runtime.start_session("987318cb-dcd3-4bb9-bb01-274f6b8d1956")
+
   def delete_session(cluster_id) do
     case get_session(cluster_id) do
-      {:ok, {pid, session, _port_slot, _session_number}} -> SessionsSupervisor.terminate_child(pid)
-      error_tuple -> error_tuple
+      {:ok, {pid, session, _port_slot, _session_number}} ->
+        SessionsSupervisor.terminate_child(pid)
+
+      error_tuple ->
+        error_tuple
     end
   end
 
@@ -56,11 +63,16 @@ defmodule PortalDeployment.Runtime do
         |> Enum.zip(port_slots)
         |> Enum.each(fn {shard, port_slot} ->
           {:ok, server} =
-            Server.new(%{shard_id: shard.id, port_slot: port_slot, is_master: shard.is_master})
+            Server.new(%{
+              cluster_id: cluster.id,
+              shard_id: shard.id,
+              port_slot: port_slot,
+              is_master: shard.is_master
+            })
 
           ServerStorage.save(server, cluster.id)
 
-          SessionSupervisor.start_child(
+          SessionServersSupervisor.start_child(
             registered_session_name(session),
             registered_server_name(server)
           )

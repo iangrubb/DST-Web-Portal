@@ -14,6 +14,7 @@ defmodule PortalDeployment.GameFiles.ClusterIni do
   def create_or_update(base_path, data) do
     new_content =
       base_path
+      |> cluster_ini_path()
       |> Helpers.read_with_backup(template())
       |> Helpers.update_ini_file_contents(data)
 

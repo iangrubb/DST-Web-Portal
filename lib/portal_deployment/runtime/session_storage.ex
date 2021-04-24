@@ -12,5 +12,5 @@ defmodule PortalDeployment.Runtime.SessionStorage do
   # I'd like to refactor the following in some way.
   # The game_files modules should probably own facts about file paths. Maybe file folder modules are needed?
 
-  def cluster_path(cluster_id), do: "../game_files/clusters/" <> cluster_id 
+  def cluster_path(cluster_id), do: "../game_files/clusters/" <> cluster_id
 end

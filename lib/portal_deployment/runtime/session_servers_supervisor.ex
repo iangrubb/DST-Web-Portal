@@ -1,4 +1,4 @@
-defmodule PortalDeployment.Runtime.SessionSupervisor do
+defmodule PortalDeployment.Runtime.SessionServersSupervisor do
   use DynamicSupervisor
 
   alias PortalDeployment.Runtime.ServerProcess
