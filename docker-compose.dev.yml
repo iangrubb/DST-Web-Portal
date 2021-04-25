@@ -17,8 +17,8 @@ services:
     volumes:
       - .:/home/dst/portal_deployment/application
       - ./game_files:/home/dst/portal_deployment/game_files
-      - ~/.gitconfig:/root/.gitconfig
-      - ~/.ssh:/root/.ssh
+      - ~/.gitconfig:/home/dst/.gitconfig
+      - ~/.ssh:/home/dst/.ssh
     depends_on:
       - postgres
     command: sleep infinity
