@@ -1,7 +1,7 @@
 defmodule PortalDeployment.GameFileSystem.ClustersFolder do
-  @clusters_path "../game_files/clusters"
+  alias PortalDeployment.GameFileSystem.TopLevelFolder
 
-  def path(), do: @clusters_path
+  def path(), do: TopLevelFolder.path() <> "/clusters"
 
   def cluster_ids, do: path() |> File.ls!()
 

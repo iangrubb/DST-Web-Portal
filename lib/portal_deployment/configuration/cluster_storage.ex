@@ -7,6 +7,8 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   alias PortalDeployment.GameFileSystem.ShardFolder
   alias PortalDeployment.GameFileSystem.ClusterFolder
   alias PortalDeployment.GameFileSystem.ClustersFolder
+  alias PortalDeployment.GameFileSystem.ModsFolder
+  alias PortalDeployment.GameFileSystem.ModSetupLua
 
   def all(), do: ClustersFolder.cluster_ids() |> Enum.map(&get!/1)
 
@@ -23,6 +25,8 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     ClusterToken.write(id, cluster_token)
     Cluster.shards(cluster) |> Enum.each(&ShardStorage.save/1)
     delete_unused_shards(id, Cluster.shards(cluster))
+    ModsFolder.ensure(id)
+    ModSetupLua.write_default(id)
   end
 
   def delete(%Cluster{id: id}) do
@@ -32,7 +36,7 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
 
   defp get!(id) do
     {master_shard, dependent_shards} = raw_shards_data(id)
-        
+
     raw_data!(id)
     |> Map.put("master_shard", master_shard)
     |> Map.put("dependent_shards", dependent_shards)

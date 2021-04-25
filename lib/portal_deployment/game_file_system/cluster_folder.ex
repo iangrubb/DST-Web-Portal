@@ -4,7 +4,11 @@ defmodule PortalDeployment.GameFileSystem.ClusterFolder do
 
   def path(id), do: ClustersFolder.path() <> "/" <> id
 
-  def shard_ids(id), do: id |> path() |> FileSystem.directories()
+  def shard_ids(id) do
+    path(id)
+    |> FileSystem.directories()
+    |> Enum.filter(fn dir_name -> dir_name != "mods" end)
+  end
 
   def ensure(id), do: id |> path() |> File.mkdir_p()
 
