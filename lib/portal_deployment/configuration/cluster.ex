@@ -3,6 +3,7 @@ defmodule PortalDeployment.Configuration.Cluster do
   import Ecto.Changeset
 
   alias PortalDeployment.Configuration.Shard
+  alias PortalDeployment.Utils.Changeset, as: ChangesetUtils
 
   embedded_schema do
     embeds_one :master_shard, Shard
@@ -35,6 +36,11 @@ defmodule PortalDeployment.Configuration.Cluster do
     |> apply_action(:create)
   end
 
+  def new!(params \\ %{}) do
+    {:ok, cluster} = new(params)
+    cluster
+  end
+
   def update(%__MODULE__{} = cluster, params) do
     cluster
     |> changeset(params)
@@ -44,6 +50,7 @@ defmodule PortalDeployment.Configuration.Cluster do
   def changeset(%__MODULE__{} = cluster, params) do
     cluster
     |> cast(params, [
+      :id,
       :cluster_name,
       :cluster_description,
       :cluster_password,
@@ -55,22 +62,23 @@ defmodule PortalDeployment.Configuration.Cluster do
       :steam_group_id,
       :steam_group_only,
       :steam_group_admins,
-      :cluster_token
+      :cluster_token,
+      :cluster_key
     ])
-    |> cast_embed(:master_shard, required: true)
-    |> cast_embed(:dependent_shards)
+    |> ChangesetUtils.ensure_uuid_for_key(:id)
+    |> ChangesetUtils.ensure_uuid_for_key(:cluster_key)
+    |> cast_shard_embed(:master_shard, true, required: true)
+    |> cast_shard_embed(:dependent_shards, false)
     |> validate_inclusion(:cluster_intention, ["coopreative", "competitive", "social", "madness"])
     |> validate_inclusion(:game_mode, ["survival", "wilderness", "endless"])
     |> validate_number(:max_players, greater_than_or_equal_to: 1, less_than_or_equal_to: 64)
-    |> ensure_random_value_for_key(:id)
-    |> ensure_random_value_for_key(:cluster_key)
   end
 
-  defp ensure_random_value_for_key(changeset, key) do
-    case Map.get(changeset.data, key) do
-      nil -> changeset |> change(Map.put(%{}, key, Ecto.UUID.generate()))
-      _ -> changeset
-    end
+  defp cast_shard_embed(changeset, key, is_master, options \\ []) do
+    cluster_id = ChangesetUtils.find_value(changeset, :id)
+    shard_mod_changeset = {Shard, :cluster_nested_changeset, [%{"is_master" => is_master, "cluster_id" => cluster_id}]}
+
+    cast_embed(changeset, key, [{:with, shard_mod_changeset} | options])
   end
 
   defp default_shards() do

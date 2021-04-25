@@ -6,9 +6,7 @@ defmodule PortalDeployment.Configuration do
   alias PortalDeployment.Configuration.Cluster
   alias PortalDeployment.Configuration.ClusterStorage
 
-  def list_clusters do
-
-  end
+  def list_clusters, do: ClusterStorage.all()
 
   def get_cluster(id), do: ClusterStorage.find(id)
 
@@ -21,22 +19,14 @@ defmodule PortalDeployment.Configuration do
     end
   end
 
-  # TODO
-    
-  # Implement cluster_update and cluster_delete (for now don't worry about how this works on live clusters)
-
-  # Check that running multiple clusters at once works, with different numbers of shards
-
-  # Refactor
-
   def update_cluster(id, params) do
     with {:ok, cluster} <- get_cluster(id),
-      {:ok, cluster} <- Cluster.update(cluster, params) do
-        ClusterStorage.save(cluster)
-        cluster
-      else
-        error_tuple -> error_tuple
-      end
+         {:ok, cluster} <- Cluster.update(cluster, params) do
+      ClusterStorage.save(cluster)
+      cluster
+    else
+      error_tuple -> error_tuple
+    end
   end
 
   def delete_cluster(id) do

@@ -1,4 +1,4 @@
-defmodule PortalDeploymentWeb.ErrorHelpers do
+defmodule PortalDeploymentWeb.ErrorFileSystem do
   @moduledoc """
   Conveniences for translating and building error messages.
   """

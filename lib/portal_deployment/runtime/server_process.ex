@@ -6,7 +6,6 @@ defmodule PortalDeployment.Runtime.ServerProcess do
   # API
 
   def start_link([registered_server_name: registered_server_name] = _init_args) do
-
     # refactor how you hadle registered_names
 
     {_, _, {_, _, server}} = registered_server_name
@@ -38,7 +37,7 @@ defmodule PortalDeployment.Runtime.ServerProcess do
 
   @impl true
   def handle_info(message, state) do
-    IO.inspect message
+    IO.inspect(message)
     {:noreply, state}
   end
 

@@ -3,7 +3,7 @@ defmodule PortalDeployment.DataCase do
   This module defines the setup for tests requiring
   access to the application's data layer.
 
-  You may define functions here to be used as helpers in
+  You may define functions here to be used as FileSystem in
   your tests.
 
   Finally, if the test case interacts with the database,

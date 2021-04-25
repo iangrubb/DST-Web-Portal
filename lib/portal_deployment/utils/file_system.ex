@@ -1,4 +1,4 @@
-defmodule PortalDeployment.GameFiles.Helpers do
+defmodule PortalDeployment.Utils.FileSystem do
   def directories(path) do
     path
     |> File.ls!()
@@ -6,7 +6,7 @@ defmodule PortalDeployment.GameFiles.Helpers do
       [name]
       |> Enum.map(fn name -> path <> "/" <> name end)
       |> Enum.filter(&File.dir?/1)
-      |> Enum.map(fn full_path -> {name, full_path} end)
+      |> Enum.map(fn _full_path -> name end)
     end)
   end
 

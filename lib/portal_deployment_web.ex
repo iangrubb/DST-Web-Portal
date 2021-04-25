@@ -23,7 +23,7 @@ defmodule PortalDeploymentWeb do
 
       import Plug.Conn
       import PortalDeploymentWeb.Gettext
-      alias PortalDeploymentWeb.Router.Helpers, as: Routes
+      alias PortalDeploymentWeb.Router.FileSystem, as: Routes
     end
   end
 
@@ -38,7 +38,7 @@ defmodule PortalDeploymentWeb do
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
       # Include shared imports and aliases for views
-      unquote(view_helpers())
+      unquote(view_FileSystem())
     end
   end
 
@@ -58,14 +58,14 @@ defmodule PortalDeploymentWeb do
     end
   end
 
-  defp view_helpers do
+  defp view_FileSystem do
     quote do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
-      import PortalDeploymentWeb.ErrorHelpers
+      import PortalDeploymentWeb.ErrorFileSystem
       import PortalDeploymentWeb.Gettext
-      alias PortalDeploymentWeb.Router.Helpers, as: Routes
+      alias PortalDeploymentWeb.Router.FileSystem, as: Routes
     end
   end
 

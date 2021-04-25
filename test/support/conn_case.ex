@@ -24,7 +24,7 @@ defmodule PortalDeploymentWeb.ConnCase do
       import Phoenix.ConnTest
       import PortalDeploymentWeb.ConnCase
 
-      alias PortalDeploymentWeb.Router.Helpers, as: Routes
+      alias PortalDeploymentWeb.Router.FileSystem, as: Routes
 
       # The default endpoint for testing
       @endpoint PortalDeploymentWeb.Endpoint

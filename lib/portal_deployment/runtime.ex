@@ -24,11 +24,9 @@ defmodule PortalDeployment.Runtime do
     end
   end
 
-  # PortalDeployment.Runtime.start_session("987318cb-dcd3-4bb9-bb01-274f6b8d1956")
-
   def delete_session(cluster_id) do
     case get_session(cluster_id) do
-      {:ok, {pid, session, _port_slot, _session_number}} ->
+      {:ok, {pid, _session, _port_slot, _session_number}} ->
         SessionsSupervisor.terminate_child(pid)
 
       error_tuple ->
@@ -52,8 +50,8 @@ defmodule PortalDeployment.Runtime do
     |> registered_session_name()
     |> SessionsSupervisor.start_child()
     |> case do
-      {:ok, pid} ->
-        {:ok, {pid, _session, port_slots, session_number}} = get_session(cluster.id)
+      {:ok, _pid} ->
+        {:ok, {_pid, _session, port_slots, session_number}} = get_session(cluster.id)
 
         SessionStorage.save_master_port(cluster.id, session_number)
 

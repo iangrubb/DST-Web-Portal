@@ -5,7 +5,7 @@ defmodule PortalDeploymentWeb.ChangesetView do
   Traverses and translates changeset errors.
 
   See `Ecto.Changeset.traverse_errors/2` and
-  `PortalDeploymentWeb.ErrorHelpers.translate_error/1` for more details.
+  `PortalDeploymentWeb.ErrorFileSystem.translate_error/1` for more details.
   """
   def translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
