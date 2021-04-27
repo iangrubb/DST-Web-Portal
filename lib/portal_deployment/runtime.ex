@@ -17,6 +17,10 @@ defmodule PortalDeployment.Runtime do
 
   def get_session(cluster_id), do: SessionsRegistry.get_session(cluster_id)
 
+  def test() do
+    start_session("ec178ca7-d043-4fd8-b393-de26196ba55e")
+  end
+
   def start_session(cluster_id) do
     case Configuration.get_cluster(cluster_id) do
       {:ok, cluster} -> create_session_for_cluster(cluster)

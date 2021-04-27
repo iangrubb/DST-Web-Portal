@@ -3,12 +3,15 @@ defmodule PortalDeployment.Configuration.Cluster do
   import Ecto.Changeset
 
   alias PortalDeployment.Configuration.Shard
+  alias PortalDeployment.Configuration.Connections
   alias PortalDeployment.Utils.Changeset, as: ChangesetUtils
+
+  # Test what happens if unrecognized ids show up in the Connection struct, may have to validate that
 
   embedded_schema do
     embeds_one :master_shard, Shard
     embeds_many :dependent_shards, Shard
-
+    embeds_one :connections, Connections
     field :cluster_name, :string, default: "My_New_Cluster"
     field :cluster_description, :string, default: ""
     field :cluster_password, :string, default: ""
@@ -29,7 +32,10 @@ defmodule PortalDeployment.Configuration.Cluster do
   end
 
   def new(params \\ %{}) do
-    params = default_shards() |> Map.merge(params)
+    params =
+      default_shards()
+      |> Map.merge(params)
+      |> apply_shard_ids()
 
     %__MODULE__{}
     |> changeset(params)
@@ -69,6 +75,7 @@ defmodule PortalDeployment.Configuration.Cluster do
     |> ChangesetUtils.ensure_uuid_for_key(:cluster_key)
     |> cast_shard_embed(:master_shard, true, required: true)
     |> cast_shard_embed(:dependent_shards, false)
+    |> cast_embed(:connections)
     |> validate_inclusion(:cluster_intention, ["coopreative", "competitive", "social", "madness"])
     |> validate_inclusion(:game_mode, ["survival", "wilderness", "endless"])
     |> validate_number(:max_players, greater_than_or_equal_to: 1, less_than_or_equal_to: 64)
@@ -79,6 +86,15 @@ defmodule PortalDeployment.Configuration.Cluster do
     shard_mod_changeset = {Shard, :cluster_nested_changeset, [%{"is_master" => is_master, "cluster_id" => cluster_id}]}
 
     cast_embed(changeset, key, [{:with, shard_mod_changeset} | options])
+  end
+
+  defp apply_shard_ids(%{"master_shard" => master_shard, "dependent_shards" => dependent_shards} = params) do
+    params
+    |> Map.put("master_shard", Map.put(master_shard, "id", "1"))
+    |> Map.put(
+      "dependent_shards",
+      dependent_shards |> Enum.with_index(2) |> Enum.map(fn {shard, id} -> Map.put(shard, "id", Integer.to_string(id)) end)
+    )
   end
 
   defp default_shards() do

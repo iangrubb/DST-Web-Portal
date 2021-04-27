@@ -1,6 +1,5 @@
 defmodule PortalDeployment.Configuration.ClusterStorage do
   alias PortalDeployment.Configuration.Cluster
-  alias PortalDeployment.Configuration.Shard
   alias PortalDeployment.Configuration.ShardStorage
   alias PortalDeployment.GameFileSystem.ClusterIni
   alias PortalDeployment.GameFileSystem.ClusterToken
@@ -9,6 +8,7 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   alias PortalDeployment.GameFileSystem.ClustersFolder
   alias PortalDeployment.GameFileSystem.ModsFolder
   alias PortalDeployment.GameFileSystem.ModSetupLua
+  alias PortalDeployment.Configuration.ConnectionsStorage
 
   def all(), do: ClustersFolder.cluster_ids() |> Enum.map(&get!/1)
 
@@ -19,14 +19,21 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     end
   end
 
-  def save(%Cluster{id: id, cluster_token: cluster_token} = cluster) do
+  def save(%Cluster{id: id, cluster_token: cluster_token, connections: connections} = cluster) do
+
+    IO.inspect(cluster)
+
     ClusterFolder.ensure(id)
     ClusterIni.create_or_update(id, cluster)
     ClusterToken.write(id, cluster_token)
+
     Cluster.shards(cluster) |> Enum.each(&ShardStorage.save/1)
     delete_unused_shards(id, Cluster.shards(cluster))
+
     ModsFolder.ensure(id)
     ModSetupLua.write_default(id)
+    
+    ConnectionsStorage.save(id, Cluster.shards(cluster), connections)
   end
 
   def delete(%Cluster{id: id}) do
@@ -50,7 +57,7 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     |> Enum.reduce({nil, []}, fn
       %{"is_master" => "true"} = shard, {nil, deps} -> {shard, deps}
       %{"is_master" => "false"} = shard, {master, deps} -> {master, [shard | deps]}
-      shard, {master, deps} -> {master, deps}
+      _shard, {master, deps} -> {master, deps}
     end)
   end
 
