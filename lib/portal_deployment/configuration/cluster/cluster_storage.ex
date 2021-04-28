@@ -20,9 +20,6 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   end
 
   def save(%Cluster{id: id, cluster_token: cluster_token, connections: connections} = cluster) do
-
-    IO.inspect(cluster)
-
     ClusterFolder.ensure(id)
     ClusterIni.create_or_update(id, cluster)
     ClusterToken.write(id, cluster_token)
@@ -43,11 +40,13 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
 
   defp get!(id) do
     {master_shard, dependent_shards} = raw_shards_data(id)
+    connections = ConnectionsStorage.get_raw_data(id, master_shard["id"])
 
     raw_data!(id)
     |> Map.put("master_shard", master_shard)
     |> Map.put("dependent_shards", dependent_shards)
     |> Map.put("id", id)
+    |> Map.put("connections", connections)
     |> Cluster.new!()
   end
 

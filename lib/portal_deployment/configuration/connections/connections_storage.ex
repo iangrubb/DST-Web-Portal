@@ -10,7 +10,41 @@ defmodule PortalDeployment.Configuration.ConnectionsStorage do
     |> Enum.each(fn shard_id -> ModOverridesLua.write(cluster_id, shard_id, connection_data) end)
   end
 
-  def connection_text(%Connections{two_way: two_way, one_way: one_way} = connections) do
+  def get_raw_data(cluster_id, master_shard_id) do
+    ModOverridesLua.read!(cluster_id, master_shard_id)
+    |> Map.get("595764362")
+    |> case do
+      nil -> nil
+      content ->
+        [two_way_lines, one_way_lines] = parse_content(content)
+
+        %{}
+        |> Map.put("one_way", Enum.flat_map(one_way_lines, &parse_line/1))
+        |> Map.put("two_way", Enum.flat_map(two_way_lines, &parse_line/1))
+    end
+  end
+
+  defp parse_content(content) do
+    content
+    |> String.trim_leading("      [\"Connections\"] = {\n")
+    |> String.trim_trailing("      }")
+    |> String.split("      },\n      [\"OneWayConnections\"] = {")
+    |> Enum.map(fn string -> string |> String.trim("\n") |> String.split("\n") end)
+  end
+
+  defp parse_line(line) do
+    [from_str, to_str] = String.split(line, "=")
+    [_, from, _] = String.split(from_str, "\"")
+
+    to_str
+    |> String.split("\"")
+    |> Enum.chunk_every(2, 2, :discard)
+    |> Enum.map(fn [_, num] -> num end)
+    |> Enum.frequencies()
+    |> Enum.map(fn {to, count} -> %{"between" => [from, to], "count" => count} end)
+  end
+
+  defp connection_text(%Connections{two_way: two_way, one_way: one_way}) do
     """
           ["Connections"] = {
     #{conns_from_grouping(two_way)}
