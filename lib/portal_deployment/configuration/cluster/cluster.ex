@@ -99,8 +99,8 @@ defmodule PortalDeployment.Configuration.Cluster do
 
   defp default_shards() do
     %{
-      "master_shard" => %{"name" => "Forest", "location" => "forest"},
-      "dependent_shards" => [%{"name" => "Caves", "location" => "cave"}]
+      "master_shard" => %{"name" => "Forest", "world_generation" => %{"location" => "forest"}},
+      "dependent_shards" => [%{"name" => "Caves", "world_generation" => %{"location" => "cave"}}]
     }
   end
 end
