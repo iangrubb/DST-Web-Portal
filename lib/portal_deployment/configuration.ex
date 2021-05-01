@@ -9,7 +9,7 @@ defmodule PortalDeployment.Configuration do
   def list_clusters, do: ClusterStorage.all()
 
   def get_cluster(id), do: ClusterStorage.find(id)
-  
+
   def create_cluster(params \\ %{}) do
     with {:ok, cluster} <- Cluster.new(params) do
       ClusterStorage.save(cluster)

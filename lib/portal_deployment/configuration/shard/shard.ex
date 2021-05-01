@@ -2,12 +2,12 @@ defmodule PortalDeployment.Configuration.Shard do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias PortalDeployment.Configuration.WorldGeneration
+  alias PortalDeployment.Configuration.WorldGen
   alias PortalDeployment.Utils.Changeset, as: ChangesetUtils
 
   @primary_key {:id, :string, []}
   embedded_schema do
-    field :world_generation, WorldGeneration
+    field :world_gen, WorldGen
     field :name, :string, default: "My_New_Shard"
     field :cluster_id, :string
     field :is_master, :boolean
@@ -15,7 +15,7 @@ defmodule PortalDeployment.Configuration.Shard do
 
   def changeset(shard, params) do
     shard
-    |> cast(params, [:id, :cluster_id, :name, :is_master, :world_generation])
+    |> cast(params, [:id, :cluster_id, :name, :is_master, :world_gen])
   end
 
   def cluster_nested_changeset(shard, params, parent_params) do

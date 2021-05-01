@@ -3,8 +3,9 @@ defmodule PortalDeployment.Configuration.ConnectionsStorage do
   alias PortalDeployment.GameFileSystem.ModOverridesLua
 
   def save(cluster_id, shards, connections) do
-    connection_data = if connections == nil, do: %{}, else: %{ "595764362" => connection_text(connections) }
-    
+    connection_data =
+      if connections == nil, do: %{}, else: %{"595764362" => connection_text(connections)}
+
     shards
     |> Enum.map(fn shard -> shard.id end)
     |> Enum.each(fn shard_id -> ModOverridesLua.write(cluster_id, shard_id, connection_data) end)
@@ -14,7 +15,9 @@ defmodule PortalDeployment.Configuration.ConnectionsStorage do
     ModOverridesLua.read!(cluster_id, master_shard_id)
     |> Map.get("595764362")
     |> case do
-      nil -> nil
+      nil ->
+        nil
+
       content ->
         [two_way_lines, one_way_lines] = parse_content(content)
 
@@ -67,7 +70,7 @@ defmodule PortalDeployment.Configuration.ConnectionsStorage do
     destination_string =
       connections_to
       |> Enum.flat_map(fn %{between: [_from, to], count: count} ->
-        1..(count)
+        1..count
         |> Enum.map(fn _ -> "\"#{to}\"" end)
       end)
       |> Enum.join(", ")

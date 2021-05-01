@@ -2,6 +2,7 @@ defmodule PortalDeployment.Configuration.Cluster do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias PortalDeployment.Configuration.ClusterGen
   alias PortalDeployment.Configuration.Shard
   alias PortalDeployment.Configuration.Connections
   alias PortalDeployment.Utils.Changeset, as: ChangesetUtils
@@ -12,6 +13,7 @@ defmodule PortalDeployment.Configuration.Cluster do
     embeds_one :master_shard, Shard
     embeds_many :dependent_shards, Shard
     embeds_one :connections, Connections
+    embeds_one :cluster_gen, ClusterGen
     field :cluster_name, :string, default: "My_New_Cluster"
     field :cluster_description, :string, default: ""
     field :cluster_password, :string, default: ""
@@ -33,7 +35,7 @@ defmodule PortalDeployment.Configuration.Cluster do
 
   def new(params \\ %{}) do
     params =
-      default_shards()
+      defaults()
       |> Map.merge(params)
       |> apply_shard_ids()
 
@@ -73,6 +75,7 @@ defmodule PortalDeployment.Configuration.Cluster do
     ])
     |> ChangesetUtils.ensure_uuid_for_key(:id)
     |> ChangesetUtils.ensure_uuid_for_key(:cluster_key)
+    |> cast_embed(:cluster_gen)
     |> cast_shard_embed(:master_shard, true, required: true)
     |> cast_shard_embed(:dependent_shards, false)
     |> cast_embed(:connections)
@@ -83,24 +86,32 @@ defmodule PortalDeployment.Configuration.Cluster do
 
   defp cast_shard_embed(changeset, key, is_master, options \\ []) do
     cluster_id = ChangesetUtils.find_value(changeset, :id)
-    shard_mod_changeset = {Shard, :cluster_nested_changeset, [%{"is_master" => is_master, "cluster_id" => cluster_id}]}
+
+    shard_mod_changeset =
+      {Shard, :cluster_nested_changeset,
+       [%{"is_master" => is_master, "cluster_id" => cluster_id}]}
 
     cast_embed(changeset, key, [{:with, shard_mod_changeset} | options])
   end
 
-  defp apply_shard_ids(%{"master_shard" => master_shard, "dependent_shards" => dependent_shards} = params) do
+  defp apply_shard_ids(
+         %{"master_shard" => master_shard, "dependent_shards" => dependent_shards} = params
+       ) do
     params
     |> Map.put("master_shard", Map.put(master_shard, "id", "1"))
     |> Map.put(
       "dependent_shards",
-      dependent_shards |> Enum.with_index(2) |> Enum.map(fn {shard, id} -> Map.put(shard, "id", Integer.to_string(id)) end)
+      dependent_shards
+      |> Enum.with_index(2)
+      |> Enum.map(fn {shard, id} -> Map.put(shard, "id", Integer.to_string(id)) end)
     )
   end
 
-  defp default_shards() do
+  defp defaults() do
     %{
-      "master_shard" => %{"name" => "Forest", "world_generation" => %{"location" => "forest"}},
-      "dependent_shards" => [%{"name" => "Caves", "world_generation" => %{"location" => "cave"}}]
+      "master_shard" => %{"name" => "Forest", "world_gen" => %{"location" => "forest"}},
+      "dependent_shards" => [%{"name" => "Caves", "world_gen" => %{"location" => "cave"}}],
+      "cluster_gen" => %{}
     }
   end
 end

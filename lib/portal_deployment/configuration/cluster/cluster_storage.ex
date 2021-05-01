@@ -29,7 +29,7 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
 
     ModsFolder.ensure(id)
     ModSetupLua.write_default(id)
-    
+
     ConnectionsStorage.save(id, Cluster.shards(cluster), connections)
   end
 

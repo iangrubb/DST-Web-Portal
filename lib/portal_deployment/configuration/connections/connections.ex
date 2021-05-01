@@ -1,7 +1,7 @@
 defmodule PortalDeployment.Configuration.Connections do
   use Ecto.Schema
   import Ecto.Changeset
-  
+
   alias PortalDeployment.Configuration.Connection
 
   @primary_key false
@@ -17,7 +17,9 @@ defmodule PortalDeployment.Configuration.Connections do
     |> cast(params, [])
     |> cast_embed(:two_way)
     |> cast_embed(:one_way)
-    |> validate_non_duplication(:two_way, fn conn -> conn.changes.between |> Enum.sort() |> Enum.join() end)
+    |> validate_non_duplication(:two_way, fn conn ->
+      conn.changes.between |> Enum.sort() |> Enum.join()
+    end)
     |> validate_non_duplication(:one_way, fn conn -> conn.changes.between |> Enum.join() end)
   end
 
