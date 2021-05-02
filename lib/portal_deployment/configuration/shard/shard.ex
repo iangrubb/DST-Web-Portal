@@ -14,6 +14,12 @@ defmodule PortalDeployment.Configuration.Shard do
   end
 
   def changeset(shard, params) do
+    params =
+      case {Map.get(shard, :world_gen), Map.get(params, "world_gen")} do
+        {nil, nil} -> Map.put(params, "world_gen", %{"location" => "forest"})
+        _ -> params
+      end
+
     shard
     |> cast(params, [:id, :cluster_id, :name, :is_master, :world_gen])
   end

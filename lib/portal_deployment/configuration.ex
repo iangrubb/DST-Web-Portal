@@ -10,6 +10,16 @@ defmodule PortalDeployment.Configuration do
 
   def get_cluster(id), do: ClusterStorage.find(id)
 
+  def test() do
+    {:ok, c} = get_cluster("525f9233-6297-48f6-8237-44a8668adef9")
+    c
+    # c.master_shard.world_gen
+    # create_cluster(%{
+    #   "cluster_gen" => %{ "summer" => "longseason" },
+    #   "master_shard" => %{ "world_gen" => %{ "location" => "cave", "monkey" => "insane"} }
+    # })
+  end
+
   def create_cluster(params \\ %{}) do
     with {:ok, cluster} <- Cluster.new(params) do
       ClusterStorage.save(cluster)

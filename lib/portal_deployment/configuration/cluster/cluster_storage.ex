@@ -1,6 +1,8 @@
 defmodule PortalDeployment.Configuration.ClusterStorage do
   alias PortalDeployment.Configuration.Cluster
   alias PortalDeployment.Configuration.ShardStorage
+  alias PortalDeployment.Configuration.ClusterGenStorage
+  alias PortalDeployment.Configuration.ConnectionsStorage
   alias PortalDeployment.GameFileSystem.ClusterIni
   alias PortalDeployment.GameFileSystem.ClusterToken
   alias PortalDeployment.GameFileSystem.ShardFolder
@@ -8,7 +10,6 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   alias PortalDeployment.GameFileSystem.ClustersFolder
   alias PortalDeployment.GameFileSystem.ModsFolder
   alias PortalDeployment.GameFileSystem.ModSetupLua
-  alias PortalDeployment.Configuration.ConnectionsStorage
 
   def all(), do: ClustersFolder.cluster_ids() |> Enum.map(&get!/1)
 
@@ -19,13 +20,15 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     end
   end
 
-  def save(%Cluster{id: id, cluster_token: cluster_token, connections: connections} = cluster) do
+  def save(%Cluster{id: id, cluster_token: cluster_token, connections: connections, cluster_gen: cluster_gen} = cluster) do
     ClusterFolder.ensure(id)
     ClusterIni.create_or_update(id, cluster)
     ClusterToken.write(id, cluster_token)
-
+    
     Cluster.shards(cluster) |> Enum.each(&ShardStorage.save/1)
     delete_unused_shards(id, Cluster.shards(cluster))
+
+    ClusterGenStorage.save(id, cluster.master_shard.id, cluster.master_shard.world_gen, cluster_gen)
 
     ModsFolder.ensure(id)
     ModSetupLua.write_default(id)
@@ -41,12 +44,14 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
   defp get!(id) do
     {master_shard, dependent_shards} = raw_shards_data(id)
     connections = ConnectionsStorage.get_raw_data(id, master_shard["id"])
+    cluster_gen = ClusterGenStorage.get(id, master_shard["id"])
 
     raw_data!(id)
     |> Map.put("master_shard", master_shard)
     |> Map.put("dependent_shards", dependent_shards)
     |> Map.put("id", id)
     |> Map.put("connections", connections)
+    |> Map.put("cluster_gen", cluster_gen)
     |> Cluster.new!()
   end
 
