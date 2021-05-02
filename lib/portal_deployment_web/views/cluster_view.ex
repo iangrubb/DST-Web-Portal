@@ -10,6 +10,10 @@ defmodule PortalDeploymentWeb.ClusterView do
     %{data: render_one(cluster, ClusterView, "cluster.json")}
   end
 
+  def render("test.json", _) do
+    %{hello: "world"}
+  end
+
   def render("cluster.json", %{cluster: cluster}) do
     %{}
   end

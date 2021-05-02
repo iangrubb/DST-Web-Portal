@@ -8,6 +8,8 @@ defmodule PortalDeploymentWeb.Router do
   scope "/api", PortalDeploymentWeb do
     pipe_through :api
 
+    get "/", ClusterController, :hello
+
     resources "/sessions", SessionController, only: [:index, :create, :delete]
 
     resources "/clusters", ClusterController, only: [:index, :show, :create, :delete] do

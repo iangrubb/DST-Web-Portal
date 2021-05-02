@@ -12,11 +12,18 @@ config :portal_deployment,
 
 # Configures the endpoint
 config :portal_deployment, PortalDeploymentWeb.Endpoint,
+  http: [port: 4000],
+  https: [port: 4001],
   url: [host: "localhost"],
   secret_key_base: "VksN82/lECIOXd5YI4Av3Y7hIXGhIOYv/aKDseXafdpqpkKEbS1F+98HKEc8uK91",
   render_errors: [view: PortalDeploymentWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: PortalDeployment.PubSub,
   live_view: [signing_salt: "sicbrMQL"]
+
+config :cors_plug,
+  origin: ["http://localhost:3000"],
+  max_age: 86400,
+  methods: ["GET", "POST"]
 
 # Configures Elixir's Logger
 config :logger, :console,

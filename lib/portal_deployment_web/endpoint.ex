@@ -1,5 +1,6 @@
 defmodule PortalDeploymentWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :portal_deployment
+  use SiteEncrypt.Phoenix
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -9,6 +10,39 @@ defmodule PortalDeploymentWeb.Endpoint do
     key: "_portal_deployment_key",
     signing_salt: "vgY9xXc/"
   ]
+
+  @impl SiteEncrypt
+  def certification do
+    SiteEncrypt.configure(
+      # Install certbot client for prod
+      client: :native,
+      # Need to pass the domain in as an env variable
+      domains: ["test.dst"],
+      emails: ["test@dst.com"],
+      # Set OS env var SITE_ENCRYPT_DB on staging/production hosts to some absolute path
+      # outside of the deployment folder. Otherwise, the deploy may delete the db_folder,
+      # which will effectively remove the generated key and certificate files.
+      db_folder:
+        System.get_env("SITE_ENCRYPT_DB", Path.join("tmp", "site_encrypt_db")),
+
+      # set OS env var CERT_MODE to "staging" or "production" on staging/production hosts
+      directory_url:
+        case System.get_env("CERT_MODE", "local") do
+          "local" -> {:internal, port: 4002}
+          "staging" -> "https://acme-staging-v02.api.letsencrypt.org/directory"
+          "production" -> "https://acme-v02.api.letsencrypt.org/directory"
+        end
+    )
+  end
+
+  @impl Phoenix.Endpoint
+  def init(_key, config) do
+    # this will merge key, cert, and chain into `:https` configuration from config.exs
+    {:ok, SiteEncrypt.Phoenix.configure_https(config)}
+
+    # to completely configure https from `init/2`, invoke:
+    #   SiteEncrypt.Phoenix.configure_https(config, port: 4001, ...)
+  end
 
   socket "/socket", PortalDeploymentWeb.UserSocket,
     websocket: true,
@@ -48,5 +82,6 @@ defmodule PortalDeploymentWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug CORSPlug
   plug PortalDeploymentWeb.Router
 end

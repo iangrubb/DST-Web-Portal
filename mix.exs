@@ -43,7 +43,9 @@ defmodule PortalDeployment.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:erlexec, "~> 1.18"}
+      {:erlexec, "~> 1.18"},
+      {:site_encrypt, "~> 0.4"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 

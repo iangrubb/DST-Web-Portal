@@ -10,6 +10,10 @@ defmodule PortalDeploymentWeb.ClusterController do
     # render(conn, "index.json", clusters: clusters)
   end
 
+  def hello(conn, _params) do
+    render(conn, "test.json")
+  end
+
   def create(conn, %{"cluster" => cluster_params}) do
     # with {:ok, %Cluster{} = cluster} <- Configuration.create_cluster(cluster_params) do
     #   conn

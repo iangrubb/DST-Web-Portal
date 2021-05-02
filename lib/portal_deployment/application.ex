@@ -16,7 +16,7 @@ defmodule PortalDeployment.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: PortalDeployment.PubSub},
       # Start the Endpoint (http/https)
-      PortalDeploymentWeb.Endpoint
+      {SiteEncrypt.Phoenix, PortalDeploymentWeb.Endpoint}
       # Start a worker by calling: PortalDeployment.Worker.start_link(arg)
       # {PortalDeployment.Worker, arg}
     ]

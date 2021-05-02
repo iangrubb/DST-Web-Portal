@@ -32,3 +32,5 @@ portal_deployment-*.tar
 /game_files
 
 .elixir_ls
+
+/tmp/
