@@ -3,7 +3,7 @@ defmodule PortalDeployment.Configuration.ClusterGenStorage do
   alias PortalDeployment.Configuration.CaveGen
   alias PortalDeployment.Configuration.ClusterGen
   alias PortalDeployment.GameFileSystem.WorldGenOverrideLua
-  
+
   def save(cluster_id, master_shard_id, %ForestGen{}, gen) do
     gen = gen |> stringify_gen
 

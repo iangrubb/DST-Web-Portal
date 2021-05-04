@@ -7,6 +7,9 @@ defmodule PortalDeploymentWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
+    secure: true,
+    same_site: "None",
+    http_only: true,
     key: "_portal_deployment_key",
     signing_salt: "vgY9xXc/"
   ]
@@ -22,8 +25,7 @@ defmodule PortalDeploymentWeb.Endpoint do
       # Set OS env var SITE_ENCRYPT_DB on staging/production hosts to some absolute path
       # outside of the deployment folder. Otherwise, the deploy may delete the db_folder,
       # which will effectively remove the generated key and certificate files.
-      db_folder:
-        System.get_env("SITE_ENCRYPT_DB", Path.join("tmp", "site_encrypt_db")),
+      db_folder: System.get_env("SITE_ENCRYPT_DB", Path.join("tmp", "site_encrypt_db")),
 
       # set OS env var CERT_MODE to "staging" or "production" on staging/production hosts
       directory_url:
@@ -82,6 +84,11 @@ defmodule PortalDeploymentWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug
+
+  plug Corsica,
+    origins: "http://localhost:3000",
+    allow_credentials: true,
+    allow_headers: ["Content-Type", "Authorization"]
+
   plug PortalDeploymentWeb.Router
 end

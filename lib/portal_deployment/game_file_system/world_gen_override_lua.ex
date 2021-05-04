@@ -11,9 +11,9 @@ defmodule PortalDeployment.GameFileSystem.WorldGenOverrideLua do
     |> parse_content()
   end
 
-  def create_or_update_forest(cluster_id, shard_id, gen) do  
+  def create_or_update_forest(cluster_id, shard_id, gen) do
     content = write_gen_lines(cluster_id, shard_id, gen) |> forest_template()
-      
+
     path(cluster_id, shard_id) |> File.write!(content)
   end
 
@@ -28,9 +28,9 @@ defmodule PortalDeployment.GameFileSystem.WorldGenOverrideLua do
     |> Map.delete("location")
     |> Map.merge(gen)
     |> Enum.map(fn
-        {key, "default"} -> ""
-        {key, value} -> "    " <> key <> "=" <> value
-      end)
+      {key, "default"} -> ""
+      {key, value} -> "    " <> key <> "=" <> value
+    end)
     |> Enum.filter(fn line -> line != "" end)
     |> Enum.join("\n")
   end
@@ -41,12 +41,21 @@ defmodule PortalDeployment.GameFileSystem.WorldGenOverrideLua do
     content
     |> String.split("\n")
     |> Enum.map(fn str -> String.split(str, "=") end)
-    |> Enum.reduce(%{ "location" => "forest"}, fn
-      [line], acc -> acc
-      ["  override_enabled", _], acc -> acc
-      ["  overrides", _], acc -> acc
-      ["  preset", _], acc -> Map.put(acc, "location", "cave")
-      [key | value], acc -> Map.put(acc, String.trim(key), (value |> Enum.join(" ") |> String.trim()))
+    |> Enum.reduce(%{"location" => "forest"}, fn
+      [line], acc ->
+        acc
+
+      ["  override_enabled", _], acc ->
+        acc
+
+      ["  overrides", _], acc ->
+        acc
+
+      ["  preset", _], acc ->
+        Map.put(acc, "location", "cave")
+
+      [key | value], acc ->
+        Map.put(acc, String.trim(key), value |> Enum.join(" ") |> String.trim())
     end)
   end
 

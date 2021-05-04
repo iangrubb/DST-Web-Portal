@@ -20,7 +20,7 @@ defmodule PortalDeployment.MixProject do
   def application do
     [
       mod: {PortalDeployment.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:corsica, :logger, :runtime_tools]
     ]
   end
 
@@ -45,7 +45,7 @@ defmodule PortalDeployment.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:erlexec, "~> 1.18"},
       {:site_encrypt, "~> 0.4"},
-      {:cors_plug, "~> 2.0"}
+      {:corsica, "~> 1.0"}
     ]
   end
 

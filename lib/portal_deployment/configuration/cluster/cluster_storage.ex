@@ -20,15 +20,27 @@ defmodule PortalDeployment.Configuration.ClusterStorage do
     end
   end
 
-  def save(%Cluster{id: id, cluster_token: cluster_token, connections: connections, cluster_gen: cluster_gen} = cluster) do
+  def save(
+        %Cluster{
+          id: id,
+          cluster_token: cluster_token,
+          connections: connections,
+          cluster_gen: cluster_gen
+        } = cluster
+      ) do
     ClusterFolder.ensure(id)
     ClusterIni.create_or_update(id, cluster)
     ClusterToken.write(id, cluster_token)
-    
+
     Cluster.shards(cluster) |> Enum.each(&ShardStorage.save/1)
     delete_unused_shards(id, Cluster.shards(cluster))
 
-    ClusterGenStorage.save(id, cluster.master_shard.id, cluster.master_shard.world_gen, cluster_gen)
+    ClusterGenStorage.save(
+      id,
+      cluster.master_shard.id,
+      cluster.master_shard.world_gen,
+      cluster_gen
+    )
 
     ModsFolder.ensure(id)
     ModSetupLua.write_default(id)

@@ -20,11 +20,6 @@ config :portal_deployment, PortalDeploymentWeb.Endpoint,
   pubsub_server: PortalDeployment.PubSub,
   live_view: [signing_salt: "sicbrMQL"]
 
-config :cors_plug,
-  origin: ["http://localhost:3000"],
-  max_age: 86400,
-  methods: ["GET", "POST"]
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
